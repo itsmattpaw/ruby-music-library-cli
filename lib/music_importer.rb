@@ -9,4 +9,12 @@ class MusicImporter
     def path
         @path
     end
+    def files
+        files = Dir.glob("*.mp3", base:@path)
+    end
+    def import
+        self.files.each do |f|
+            Song.create_from_filename(f)
+        end
+    end
 end 

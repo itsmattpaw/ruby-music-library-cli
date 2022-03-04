@@ -1,6 +1,7 @@
 require 'pry'
 
 class Song
+    extend Concerns::Findable
     attr_accessor :name, :artist, :genre
     @@all = []
 
@@ -33,17 +34,19 @@ class Song
         end
     end
 
-    #findable methods
-    def self.find_by_name(name)
-        @@all.find {|song| song if song.name == name}
-    end
-    #binding.pry
-    def self.find_or_create_by_name(name)
-        song = self.find_by_name(name)
-        if song == nil
-            self.create(name)
-        else
-            song
+    def self.new_from_filename(file)
+        s =  file.split(" - ")
+        g = s[2].split(".")
+        #binding.pry
+        if Song.find_by_name(s[1]) == nil
+            item = Song.new(s[1])
+            item.artist = Artist.find_or_create_by_name(s[0])
+            item.genre = Genre.find_or_create_by_name(g[0])
         end
+        item
+    end
+    def self.create_from_filename(file)
+        s = Song.new_from_filename(file)
+        s.save
     end
 end
